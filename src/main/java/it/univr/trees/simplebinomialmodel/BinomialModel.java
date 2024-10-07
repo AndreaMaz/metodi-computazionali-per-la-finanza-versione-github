@@ -40,7 +40,7 @@ public class BinomialModel {
 	 * @param downFactor: the number d such that S(i+1)=S(i)*d with probability 1-q
 	 * @param riskFreeFactor: the number rho such that the risk free bond B satisfies B(i+1)=B(i)*(1+rho).
 	 * 						  In order to have an arbitrage free market, it must hold d<1+rho<u.
-	 * @param initialValue: the initial value of the process, B(0)
+	 * @param initialValue: the initial value of the process, S(0)
 	 * @param numberOfTimes: the number of times for which the process is simulated, starting from time 0.
 	 * 						 Note that this is equal to the number of subintervals plus 1.
 	 */
