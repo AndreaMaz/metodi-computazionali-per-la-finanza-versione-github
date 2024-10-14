@@ -59,7 +59,6 @@ public class EuropeanBarrierOption {
 		double[] optionValuesWithoutBarrier = approximatingBinomialModel.getTransformedValuesAtGivenTime(maturity, payoffFunction);
 		
 		//the values of the underlyings: we need them to check if they are inside the interval
-		
 		double[] underlyingValues = approximatingBinomialModel.getValuesAtGivenTime(maturity);
 		
 		/*
@@ -69,12 +68,19 @@ public class EuropeanBarrierOption {
 		//(0,0,0,1,1,1...,0,0,0)
 		double[] areTheUnderlyingValuesInsideInterval = UsefulMethodsForArrays.applyFunctionToArray(underlyingValues, barrierFunction);
 		 
-		//(f(S_0u^nd^0),f(S_0u^(n-1)d^1),..., f(S_0u^0d^n))
 		//the values of the option at maturity, considering now the barrier
 		double[] optionValues = UsefulMethodsForArrays.multArrays(optionValuesWithoutBarrier, areTheUnderlyingValuesInsideInterval);
 
-		int numberOfTimes = (int) Math.round(maturity/approximatingBinomialModel.getTimeStep());
-		for (int timeIndex = numberOfTimes - 1; timeIndex >= 0; timeIndex--) {
+		int numberOfTimeSteps = (int) Math.round(maturity/approximatingBinomialModel.getTimeStep());
+		
+		/*
+		 * We go backward. Looking at the Javadoc documentation of the method getConditionalExpectation, you can note that
+		 * for any timeIndex we compute the conditional expectation of the value of the option at the time indicized by
+		 * timeIndex + 1. In particular, at the first iteration we compute the expectations of the values of the option at
+		 * the time indicized by (numberOfTimeSteps - 1) + 1 = numberOfTimeSteps,
+		 * which is the index of the maturity. 
+		 */
+		for (int timeIndex = numberOfTimeSteps - 1; timeIndex >= 0; timeIndex--) {
 			//now we repeat the same thing as above at any time.
 			
 			//the values of the option not considering the barrier

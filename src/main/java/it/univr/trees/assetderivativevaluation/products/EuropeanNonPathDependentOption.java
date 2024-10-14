@@ -41,10 +41,16 @@ public class EuropeanNonPathDependentOption {
 	public double getValue(ApproximatingBinomialModel approximatingBinomialModel) {
 		//the vector representing all the possible values of the payoff at maturity
 		double[] optionValues = approximatingBinomialModel.getTransformedValuesAtGivenTime(maturity, payoffFunction);
-		int numberOfTimes = (int) Math.round(maturity/approximatingBinomialModel.getTimeStep());
-		//we go backward and for any timeIndex we compute the conditional expectation of the value of the option at timeIndex + 1
-		for (int timeIndex = numberOfTimes - 1; timeIndex >= 0; timeIndex--) {
-			//delegation to approximatingBinomialModel!
+		int numberOfTimeSteps = (int) Math.round(maturity/approximatingBinomialModel.getTimeStep());
+		/*
+		 * We go backward. Looking at the Javadoc documentation of the method getConditionalExpectation, you can note that
+		 * for any timeIndex we compute the conditional expectation of the value of the option at the time indicized by
+		 * timeIndex + 1. In particular, at the first iteration we compute the expectations of the values of the option at
+		 * the time indicized by (numberOfTimeSteps - 1) + 1 = numberOfTimeSteps,
+		 * which is the index of the maturity. 
+		 */
+		for (int timeIndex = numberOfTimeSteps - 1; timeIndex >= 0; timeIndex--) {
+			//Delegation to approximatingBinomialModel!
         	double[] conditionalExpectation = approximatingBinomialModel.getConditionalExpectation(optionValues, timeIndex);
             optionValues = conditionalExpectation;   
         }
