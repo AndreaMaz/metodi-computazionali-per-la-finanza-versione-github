@@ -217,13 +217,13 @@ public class BinomialModel {
 	 * It returns an array representing the discounted conditional expectations at given timeIndex of the
 	 * values of (possibly a function of) a binomial model at time timeIndex+1. 
 	 * 
-	 * @param binomialValues, values of (possibly a function of) a binomial model at time timeIndex+1
+	 * @param values, values of (possibly a function of) a binomial model at time timeIndex+1
 	 * @param timeIndex, the time index
 	 * @return the array of the discounted conditional expectations at timeIndex of binomialValues. 
 	 * 			The i-th element is the conditional expectation computed in the case when the underlying
 	 * 			has gone down i times.
 	 */
-	public double[] getConditionalExpectation(double[] binomialValues,int timeIndex) {
+	public double[] getConditionalExpectation(double[] values, int timeIndex) {
 		//at timeIndex we have timeIndex + 1 values
 		double[] conditionalExpectation = new double[timeIndex+1];
 		for (int i = 0; i <= timeIndex; i++) {
@@ -231,7 +231,7 @@ public class BinomialModel {
 			 * computation of the conditional probability at the state with i down. Note that the i-th element
 			 * of binomialValues has gone up, because the number of down is still i. 
 			 */
-			conditionalExpectation[i] = (binomialValues[i]*riskNeutralProbabilityUp + binomialValues[i + 1]*riskNeutralProbabilityDown)/(1+riskFreeFactor);
+			conditionalExpectation[i] = (values[i]*riskNeutralProbabilityUp + values[i + 1]*riskNeutralProbabilityDown)/(1+riskFreeFactor);
 		}
 		return conditionalExpectation;
 	}

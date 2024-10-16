@@ -215,18 +215,18 @@ public abstract class ApproximatingBinomialModel {
 	 * It returns an array representing the discounted conditional expectations at given timeIndex of the
 	 * values of (possibly a function of) an approximating binomial model at time timeIndex+1. 
 	 * 
-	 * @param binomialValues, values of (possibly a function of) an approximating binomial model at time timeIndex+1
+	 * @param values, values of (possibly a function of) an approximating binomial model at time timeIndex+1
 	 * @param timeIndex, the time index
-	 * @return the array of the discounted conditional expectations at timeIndex of binomialValues. 
+	 * @return the array of the discounted conditional expectations at timeIndex of values. 
 	 * 			The i-th element is the conditional expectation computed in the case when the underlying
 	 * 			has gone down i times.
 	 */
-	public double[] getConditionalExpectation(double[] optionValues,int timeIndex) {
+	public double[] getConditionalExpectation(double[] values,int timeIndex) {
 		//we want to generate ourBinomialModel only once! So we check if it is null: if yes, we have to generate it
 		if (ourBinomialModel==null) {
 			generateBinomialModel();
 		}
-		return ourBinomialModel.getConditionalExpectation(optionValues, timeIndex);
+		return ourBinomialModel.getConditionalExpectation(values, timeIndex);
 	}
 
 	/*
