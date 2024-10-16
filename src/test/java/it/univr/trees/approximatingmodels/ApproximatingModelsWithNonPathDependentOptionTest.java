@@ -39,20 +39,20 @@ public class ApproximatingModelsWithNonPathDependentOptionTest {
 		DoubleUnaryOperator numberOfTimesToPriceCoxRossRubinsteinModel = (numberOfTimesForFunction) -> {
 			CoxRossRubinsteinModel ourModelForFunction = new CoxRossRubinsteinModel(spotPrice, riskFreeRate,
 					volatility, lastTime, (int) numberOfTimesForFunction);		
-			return ourOption.getValue(ourModelForFunction);
+			return ourOption.getValueDirect(ourModelForFunction);
 		};
 		
 		DoubleUnaryOperator numberOfTimesToPriceJarrowRuddModel = (numberOfTimesForFunction) -> {
 			JarrowRuddModel ourModelForFunction = new JarrowRuddModel(spotPrice, riskFreeRate,
 					volatility, lastTime, (int) numberOfTimesForFunction);		
-			return ourOption.getValue(ourModelForFunction);
+			return ourOption.getValueDirect(ourModelForFunction);
 		};
 		
 		
 		DoubleUnaryOperator numberOfTimesToPriceLeisenReimer = (numberOfTimesForFunction) -> {
 			LeisenReimerModel ourModelForFunction = new LeisenReimerModel(spotPrice,
 					riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction, strike);		
-			return ourOption.getValue(ourModelForFunction);
+			return ourOption.getValueDirect(ourModelForFunction);
 		};
 		
 		/*
