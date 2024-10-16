@@ -3,54 +3,55 @@ package it.univr.trees.approximatingmodels;
 import java.util.Arrays;
 import java.util.function.DoubleUnaryOperator;
 
-import it.univr.trees.assetderivativevaluation.products.EuropeanBarrierOption;
-import it.univr.analyticformulas.OurAnalyticFormulas;
-
+import it.univr.trees.assetderivativevaluation.products.EuropeanNonPathDependentOption;
+import net.finmath.functions.AnalyticFormulas;
 import net.finmath.plots.Named;
 import net.finmath.plots.Plot2D;
 
-public class ApproximatingModelsWithBarrierOptionTest {
+public class ApproximatingModelsWithNonPathDependentOptionTest {
 	
 	public static void main(String[] strings) throws Exception {
 
-		double spotPrice = 2;
+		double spotPrice = 100;
 		double riskFreeRate = 0.0;
-		double volatility = 0.7;
-		double lastTime = 3;
-		
-		double strike = 2;
-		
-		double lowerBarrier = 1.7;
-		
-		
-		DoubleUnaryOperator payoffFunction = (x) -> Math.max(x - strike, 0);
-		
-		EuropeanBarrierOption ourOption = new EuropeanBarrierOption(lastTime, payoffFunction, lowerBarrier, Double.MAX_VALUE);
-		
+		double volatility = 0.2;
+		double lastTime = 1.0;
+
+		double strike = 100;
 		
 		/*
-		 * We want to plot the results we get for our approximating models when we increase the number of times.
-		 * In the same plot, we want to show also the analyic price of the option, as a benchmark.
+		 * We want to plot the expected value of the final payoff of an option written on our approximating models when we
+		 * increase the number of times. In the same plot, we want to show also the analyic price of the option,
+		 * as a benchmark.
+		 */
+		DoubleUnaryOperator payoffFunction = (x) -> (x - strike > 0 ? 1.0 : 0.0);//European digital option
+		
+		EuropeanNonPathDependentOption ourOption = new EuropeanNonPathDependentOption(lastTime, payoffFunction);
+
+		/*
 		 * We use the Plot2D class of finmath-lib-plot-extensions. In order to do that, we have to define the
 		 * functions to plot as objects of type DoubleUnaryOperator.
 		 * In our case, we want these functions to take the number of times and return the prices approximated
 		 * with this number of times. For us numberOfTimesForFunction should be an int, but in order to define
 		 * a DoubleUnaryOperator one should take a double. So we first treat it as a double and then we downcast
 		 * it when passing it to the getValue of EuropeanNonPathDependentOption.
-		 */		
+		 */
 		DoubleUnaryOperator numberOfTimesToPriceCoxRossRubinsteinModel = (numberOfTimesForFunction) -> {
-			CoxRossRubinsteinModel ourModelForFunction = new CoxRossRubinsteinModel(spotPrice, riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction);		
+			CoxRossRubinsteinModel ourModelForFunction = new CoxRossRubinsteinModel(spotPrice, riskFreeRate,
+					volatility, lastTime, (int) numberOfTimesForFunction);		
 			return ourOption.getValue(ourModelForFunction);
 		};
 		
 		DoubleUnaryOperator numberOfTimesToPriceJarrowRuddModel = (numberOfTimesForFunction) -> {
-			JarrowRuddModel ourModelForFunction = new JarrowRuddModel(spotPrice, riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction);		
+			JarrowRuddModel ourModelForFunction = new JarrowRuddModel(spotPrice, riskFreeRate,
+					volatility, lastTime, (int) numberOfTimesForFunction);		
 			return ourOption.getValue(ourModelForFunction);
 		};
 		
 		
 		DoubleUnaryOperator numberOfTimesToPriceLeisenReimer = (numberOfTimesForFunction) -> {
-			LeisenReimerModel ourModelForFunction = new LeisenReimerModel(spotPrice, riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction, strike);		
+			LeisenReimerModel ourModelForFunction = new LeisenReimerModel(spotPrice,
+					riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction, strike);		
 			return ourOption.getValue(ourModelForFunction);
 		};
 		
@@ -59,62 +60,40 @@ public class ApproximatingModelsWithBarrierOptionTest {
 		 * that always gives the same value.
 		 */
 		DoubleUnaryOperator dummyFunctionBlackScholesPrice = (numberOfTimesForFunction) -> {
-			return OurAnalyticFormulas.blackScholesDownAndOut(spotPrice, riskFreeRate, volatility, lastTime, strike, lowerBarrier);
+			return AnalyticFormulas.blackScholesDigitalOptionValue(spotPrice, riskFreeRate, volatility, lastTime, strike);
 		};
+
 		
-	
-		int maxNumberOfTimes = 1500;
+		//we now plot the functions from a minimum number of points to a maximum number of points
+		int maxNumberOfTimes = 500;
 		int minNumberOfTimes = 10;
 		
-		//plots
 		
 		final Plot2D plotCRR = new Plot2D(minNumberOfTimes, maxNumberOfTimes, maxNumberOfTimes-minNumberOfTimes+1, Arrays.asList(
 				new Named<DoubleUnaryOperator>("Cox Ross Rubinstein", numberOfTimesToPriceCoxRossRubinsteinModel),
-				new Named<DoubleUnaryOperator>("Analytic price", dummyFunctionBlackScholesPrice)));
+				new Named<DoubleUnaryOperator>("Black-Scholes", dummyFunctionBlackScholesPrice)));
 		
 		plotCRR.setXAxisLabel("Number of discretized times");
 		plotCRR.setYAxisLabel("Price");
 		plotCRR.setIsLegendVisible(true);
 		plotCRR.show();
 		
+		
 		final Plot2D plotJR = new Plot2D(minNumberOfTimes, maxNumberOfTimes, maxNumberOfTimes-minNumberOfTimes+1, Arrays.asList(
 				new Named<DoubleUnaryOperator>("Jarrow Rudd", numberOfTimesToPriceJarrowRuddModel),
-				new Named<DoubleUnaryOperator>("Analytic price", dummyFunctionBlackScholesPrice)));
+				new Named<DoubleUnaryOperator>("Black-Scholes", dummyFunctionBlackScholesPrice)));
 		plotJR.setXAxisLabel("Number of discretized times");
 		plotJR.setYAxisLabel("Price");
 		plotJR.setIsLegendVisible(true);
 		plotJR.show();
 		
+		
 		final Plot2D plotLR = new Plot2D(minNumberOfTimes, maxNumberOfTimes,  maxNumberOfTimes-minNumberOfTimes+1, Arrays.asList(
 				new Named<DoubleUnaryOperator>("Leisen Reimer", numberOfTimesToPriceLeisenReimer),
-				new Named<DoubleUnaryOperator>("Analytic price", dummyFunctionBlackScholesPrice)));
+				new Named<DoubleUnaryOperator>("Black-Scholes", dummyFunctionBlackScholesPrice)));
 		plotLR.setXAxisLabel("Number of discretized times");
 		plotLR.setYAxisLabel("Price");
 		plotLR.setIsLegendVisible(true);
-		plotLR.show();		
-		
-		
-//		int numberOfConsecutiveDownsToReachBarrier = 2;
-//
-//		double fofM = numberOfConsecutiveDownsToReachBarrier*numberOfConsecutiveDownsToReachBarrier*volatility*volatility*lastTime
-//
-//		/Math.pow(Math.log(lowerBarrier/spotPrice), 2);
-//
-//		int idealNumberOfTimeSteps = (int) Math.floor(fofM);
-//
-//		//check of the values in the paper
-//
-//		System.out.println("Ideal number of times " + idealNumberOfTimeSteps+1);
-//
-//		System.out.println("Value option for ideal number of times " +
-//
-//		numberOfTimesToPriceCoxRossRubinsteinModel.applyAsDouble(idealNumberOfTimeSteps+1));
-//
-//		System.out.println("Value option for ideal number of times plus one " +
-//
-//		numberOfTimesToPriceCoxRossRubinsteinModel.applyAsDouble(idealNumberOfTimeSteps+2));
-//
-//		System.out.println("Analytic value " + OurAnalyticFormulas.blackScholesDownAndOut(spotPrice, riskFreeRate, volatility, lastTime, strike, lowerBarrier));
-//		
+		plotLR.show();
 	}
 }
