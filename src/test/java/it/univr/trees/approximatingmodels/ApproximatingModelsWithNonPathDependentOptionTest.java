@@ -17,8 +17,9 @@ public class ApproximatingModelsWithNonPathDependentOptionTest {
 		double volatility = 0.2;
 		double lastTime = 1.0;
 
-		double strike = 100;
+		double strike = 120;
 		
+		double timeStep = 0.1;
 		/*
 		 * We want to plot the expected value of the final payoff of an option written on our approximating models when we
 		 * increase the number of times. In the same plot, we want to show also the analyic price of the option,
@@ -28,6 +29,18 @@ public class ApproximatingModelsWithNonPathDependentOptionTest {
 		
 		EuropeanNonPathDependentOption ourOption = new EuropeanNonPathDependentOption(lastTime, payoffFunction);
 
+		CoxRossRubinsteinModel firstUnderlying = new CoxRossRubinsteinModel(spotPrice, riskFreeRate, volatility, lastTime, timeStep);
+		
+		double optionValueCRR = ourOption.getValueDirect(firstUnderlying);
+		
+		System.out.println("Price for CRR: " + optionValueCRR);
+		
+		LeisenReimerModel secondUnderlying = new LeisenReimerModel(spotPrice, riskFreeRate, volatility, lastTime, timeStep, strike);
+		
+		double optionValueLR = ourOption.getValueDirect(secondUnderlying);
+		
+		System.out.println("Price for LR: " + optionValueLR);
+		
 		/*
 		 * We use the Plot2D class of finmath-lib-plot-extensions. In order to do that, we have to define the
 		 * functions to plot as objects of type DoubleUnaryOperator.
@@ -69,9 +82,11 @@ public class ApproximatingModelsWithNonPathDependentOptionTest {
 		int minNumberOfTimes = 10;
 		
 		
-		final Plot2D plotCRR = new Plot2D(minNumberOfTimes, maxNumberOfTimes, maxNumberOfTimes-minNumberOfTimes+1, Arrays.asList(
+		final Plot2D plotCRR = new Plot2D(minNumberOfTimes, maxNumberOfTimes, maxNumberOfTimes-minNumberOfTimes+1, 
+				Arrays.asList(
 				new Named<DoubleUnaryOperator>("Cox Ross Rubinstein", numberOfTimesToPriceCoxRossRubinsteinModel),
-				new Named<DoubleUnaryOperator>("Black-Scholes", dummyFunctionBlackScholesPrice)));
+				new Named<DoubleUnaryOperator>("Black-Scholes", dummyFunctionBlackScholesPrice))
+				);
 		
 		plotCRR.setXAxisLabel("Number of discretized times");
 		plotCRR.setYAxisLabel("Price");

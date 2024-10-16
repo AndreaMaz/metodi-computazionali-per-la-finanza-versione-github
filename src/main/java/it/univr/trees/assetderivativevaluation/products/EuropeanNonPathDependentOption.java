@@ -69,8 +69,7 @@ public class EuropeanNonPathDependentOption {
 	public double getValueDirect(ApproximatingBinomialModel approximatingBinomialModel) {
 		//the values of the payoffs..
 		//(f(S_0u^nd^0),f(S_0u^(n-1)d^1),...,f(S_0u^0d^n))
-		double[] payoffValues = approximatingBinomialModel.
-				getTransformedValuesAtGivenTime(maturity, payoffFunction);
+		double[] payoffValues = approximatingBinomialModel.getTransformedValuesAtGivenTime(maturity, payoffFunction);
 		//..and the corresponding probabilities
 		//(Q(S_0u^nd^0),Q(S_0u^(n-1)d^1),...,Q(S_0u^0d^n))
 		double[] valuesProbabailities = approximatingBinomialModel.getValuesProbabilitiesAtGivenTime(maturity);

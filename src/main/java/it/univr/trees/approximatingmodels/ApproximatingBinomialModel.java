@@ -74,7 +74,6 @@ public abstract class ApproximatingBinomialModel {
 		this.lastTime = lastTime;
 		this.numberOfTimes = numberOfTimes;
 		timeStep = lastTime/(numberOfTimes-1);//the times step comes from the number of times
-
 	}
 
 	//this is an abstract method which gets implemented in the derived classes : it sets the up and down factors
@@ -85,7 +84,7 @@ public abstract class ApproximatingBinomialModel {
 	 * implementation is the same for any approximation method.
 	 */
 	private void generateBinomialModel() {
-		double[] upAndDownFactors = getUpAndDownFactorsOfBinomialModel();
+		double[] upAndDownFactors = getUpAndDownFactorsOfBinomialModel();//[u_n, d_n]
 		double riskFreeFactorForBinomialModel = Math.exp(riskFreeRate * timeStep) - 1;
 
 		ourBinomialModel = new BinomialModel(upAndDownFactors[0], upAndDownFactors[1],  riskFreeFactorForBinomialModel, initialPrice, numberOfTimes);
