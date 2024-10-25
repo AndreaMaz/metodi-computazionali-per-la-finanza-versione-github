@@ -94,27 +94,27 @@ public class ApproximatingModelsWithBarrierOptionTest {
 		plotLR.show();		
 		
 		
-//		int numberOfConsecutiveDownsToReachBarrier = 2;
-//
-//		double fofM = numberOfConsecutiveDownsToReachBarrier*numberOfConsecutiveDownsToReachBarrier*volatility*volatility*lastTime
-//
-//		/Math.pow(Math.log(lowerBarrier/spotPrice), 2);
-//
-//		int idealNumberOfTimeSteps = (int) Math.floor(fofM);
-//
-//		//check of the values in the paper
-//
-//		System.out.println("Ideal number of times " + idealNumberOfTimeSteps+1);
-//
-//		System.out.println("Value option for ideal number of times " +
-//
-//		numberOfTimesToPriceCoxRossRubinsteinModel.applyAsDouble(idealNumberOfTimeSteps+1));
-//
-//		System.out.println("Value option for ideal number of times plus one " +
-//
-//		numberOfTimesToPriceCoxRossRubinsteinModel.applyAsDouble(idealNumberOfTimeSteps+2));
-//
-//		System.out.println("Analytic value " + OurAnalyticFormulas.blackScholesDownAndOut(spotPrice, riskFreeRate, volatility, lastTime, strike, lowerBarrier));
-//		
+		int numberOfConsecutiveDownsToReachBarrier = 3;
+
+		double fofM = numberOfConsecutiveDownsToReachBarrier*numberOfConsecutiveDownsToReachBarrier*volatility*volatility*lastTime
+
+		/Math.pow(Math.log(lowerBarrier/spotPrice), 2);
+
+		int idealNumberOfTimeSteps = (int) Math.floor(fofM);
+
+		//check of the values in the paper
+
+		System.out.println("Ideal number of times " + (idealNumberOfTimeSteps+1));
+
+		System.out.println("Value option for ideal number of times " +
+
+		numberOfTimesToPriceCoxRossRubinsteinModel.applyAsDouble(idealNumberOfTimeSteps+1));
+
+		System.out.println("Value option for ideal number of times plus one " +
+
+		numberOfTimesToPriceCoxRossRubinsteinModel.applyAsDouble(idealNumberOfTimeSteps+2));
+
+		System.out.println("Analytic value " + OurAnalyticFormulas.blackScholesDownAndOut(spotPrice, riskFreeRate, volatility, lastTime, strike, lowerBarrier));
+		
 	}
 }
