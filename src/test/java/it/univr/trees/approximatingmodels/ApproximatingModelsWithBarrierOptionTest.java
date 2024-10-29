@@ -10,24 +10,24 @@ import net.finmath.plots.Named;
 import net.finmath.plots.Plot2D;
 
 public class ApproximatingModelsWithBarrierOptionTest {
-	
+
 	public static void main(String[] strings) throws Exception {
 
 		double spotPrice = 2;
 		double riskFreeRate = 0.0;
 		double volatility = 0.7;
 		double lastTime = 3;
-		
+
 		double strike = 2;
-		
+
 		double lowerBarrier = 1.7;
-		
-		
+
+
 		DoubleUnaryOperator payoffFunction = (x) -> Math.max(x - strike, 0);
-		
+
 		EuropeanBarrierOption ourOption = new EuropeanBarrierOption(lastTime, payoffFunction, lowerBarrier, Double.MAX_VALUE);
-		
-		
+
+
 		/*
 		 * We want to plot the results we get for our approximating models when we increase the number of times.
 		 * In the same plot, we want to show also the analyic price of the option, as a benchmark.
@@ -42,18 +42,18 @@ public class ApproximatingModelsWithBarrierOptionTest {
 			CoxRossRubinsteinModel ourModelForFunction = new CoxRossRubinsteinModel(spotPrice, riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction);		
 			return ourOption.getValue(ourModelForFunction);
 		};
-		
+
 		DoubleUnaryOperator numberOfTimesToPriceJarrowRuddModel = (numberOfTimesForFunction) -> {
 			JarrowRuddModel ourModelForFunction = new JarrowRuddModel(spotPrice, riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction);		
 			return ourOption.getValue(ourModelForFunction);
 		};
-		
-		
+
+
 		DoubleUnaryOperator numberOfTimesToPriceLeisenReimer = (numberOfTimesForFunction) -> {
 			LeisenReimerModel ourModelForFunction = new LeisenReimerModel(spotPrice, riskFreeRate, volatility, lastTime, (int) numberOfTimesForFunction, strike);		
 			return ourOption.getValue(ourModelForFunction);
 		};
-		
+
 		/*
 		 * This is the DoubleUnaryOperator to plot the analytic price. "Dummy" in the sense that it is a function
 		 * that always gives the same value.
@@ -61,22 +61,22 @@ public class ApproximatingModelsWithBarrierOptionTest {
 		DoubleUnaryOperator dummyFunctionBlackScholesPrice = (numberOfTimesForFunction) -> {
 			return OurAnalyticFormulas.blackScholesDownAndOut(spotPrice, riskFreeRate, volatility, lastTime, strike, lowerBarrier);
 		};
-		
-	
+
+
 		int maxNumberOfTimes = 1500;
 		int minNumberOfTimes = 10;
-		
+
 		//plots
-		
+
 		final Plot2D plotCRR = new Plot2D(minNumberOfTimes, maxNumberOfTimes, maxNumberOfTimes-minNumberOfTimes+1, Arrays.asList(
 				new Named<DoubleUnaryOperator>("Cox Ross Rubinstein", numberOfTimesToPriceCoxRossRubinsteinModel),
 				new Named<DoubleUnaryOperator>("Analytic price", dummyFunctionBlackScholesPrice)));
-		
+
 		plotCRR.setXAxisLabel("Number of discretized times");
 		plotCRR.setYAxisLabel("Price");
 		plotCRR.setIsLegendVisible(true);
 		plotCRR.show();
-		
+
 		final Plot2D plotJR = new Plot2D(minNumberOfTimes, maxNumberOfTimes, maxNumberOfTimes-minNumberOfTimes+1, Arrays.asList(
 				new Named<DoubleUnaryOperator>("Jarrow Rudd", numberOfTimesToPriceJarrowRuddModel),
 				new Named<DoubleUnaryOperator>("Analytic price", dummyFunctionBlackScholesPrice)));
@@ -84,7 +84,7 @@ public class ApproximatingModelsWithBarrierOptionTest {
 		plotJR.setYAxisLabel("Price");
 		plotJR.setIsLegendVisible(true);
 		plotJR.show();
-		
+
 		final Plot2D plotLR = new Plot2D(minNumberOfTimes, maxNumberOfTimes,  maxNumberOfTimes-minNumberOfTimes+1, Arrays.asList(
 				new Named<DoubleUnaryOperator>("Leisen Reimer", numberOfTimesToPriceLeisenReimer),
 				new Named<DoubleUnaryOperator>("Analytic price", dummyFunctionBlackScholesPrice)));
@@ -92,15 +92,14 @@ public class ApproximatingModelsWithBarrierOptionTest {
 		plotLR.setYAxisLabel("Price");
 		plotLR.setIsLegendVisible(true);
 		plotLR.show();		
-		
-		
-		int numberOfConsecutiveDownsToReachBarrier = 3;
+
+
+		int numberOfConsecutiveDownsToReachBarrier = 2;//m
 
 		double fofM = numberOfConsecutiveDownsToReachBarrier*numberOfConsecutiveDownsToReachBarrier*volatility*volatility*lastTime
+				/Math.pow(Math.log(lowerBarrier/spotPrice), 2);
 
-		/Math.pow(Math.log(lowerBarrier/spotPrice), 2);
-
-		int idealNumberOfTimeSteps = (int) Math.floor(fofM);
+		int idealNumberOfTimeSteps = (int) Math.floor(fofM);//n
 
 		//check of the values in the paper
 
@@ -116,5 +115,23 @@ public class ApproximatingModelsWithBarrierOptionTest {
 
 		System.out.println("Analytic value " + OurAnalyticFormulas.blackScholesDownAndOut(spotPrice, riskFreeRate, volatility, lastTime, strike, lowerBarrier));
 		
+		System.out.println();
+
+		CoxRossRubinsteinModel goodTree = new CoxRossRubinsteinModel(spotPrice, riskFreeRate, volatility, lastTime,idealNumberOfTimeSteps+1);
+		CoxRossRubinsteinModel badTree = new CoxRossRubinsteinModel(spotPrice, riskFreeRate, volatility, lastTime,idealNumberOfTimeSteps+2);
+
+		double[] possibleValuesOfGoodTreeAtTimeIndexTwo = goodTree.getValuesAtGivenTimeIndex(2);
+		double smallestValueOfGoodTreeAtTimeIndexTwo = possibleValuesOfGoodTreeAtTimeIndexTwo[2];
+		
+		double[] possibleValuesOfBadTreeAtTimeIndexTwo = badTree.getValuesAtGivenTimeIndex(2);
+		double smallestValueOfBadTreeAtTimeIndexTwo = possibleValuesOfBadTreeAtTimeIndexTwo[2];
+
+		System.out.println("Smallest value of good tree at time index 2: " + smallestValueOfGoodTreeAtTimeIndexTwo);
+		System.out.println("Smallest value of bad tree at time index 2: " + smallestValueOfBadTreeAtTimeIndexTwo);
+
+		double[] possibleValuesOfBadTreeAtTimeIndexThree = badTree.getValuesAtGivenTimeIndex(3);
+		double smallestValueOfBadTreeAtTimeIndexThree = possibleValuesOfBadTreeAtTimeIndexThree[3];
+		System.out.println("Smallest value of bad tree at time index 3: " + smallestValueOfBadTreeAtTimeIndexThree);
+
 	}
 }
