@@ -43,6 +43,15 @@ public class PseudoRandomNumbersTesting {
                 + " : " + Arrays.toString(sequenceGeneratedByTheSecondObject));
 
 
+        System.out.println();
+        long maxLong = Long.MAX_VALUE;
+        System.out.println("Max long = " + maxLong);
+        long maxLongPlusOne = maxLong + 1;
+        System.out.println("Max long plus one = " + maxLongPlusOne);
+        long minLong = Long.MIN_VALUE;
+        System.out.println("Min long = " + minLong);
+        long maxLongMinusOne = minLong - 1;
+        System.out.println("Max long plus one = " + maxLongMinusOne);
 
     }
 }

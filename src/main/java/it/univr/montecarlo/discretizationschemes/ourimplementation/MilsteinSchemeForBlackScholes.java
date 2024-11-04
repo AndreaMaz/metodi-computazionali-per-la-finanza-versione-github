@@ -13,16 +13,16 @@ import net.finmath.time.TimeDiscretization;
  */
 public class MilsteinSchemeForBlackScholes extends AbstractProcessSimulation {
 
-	private final double muDrift;// mu
-	private final double sigmaVolatility;// sigma
+	private double muDrift;// mu
+	private double sigmaVolatility;// sigma
 
 	public MilsteinSchemeForBlackScholes(double sigmaVolatility, double muDrift,
 			double initialValue,  int numberOfSimulations, int seed, TimeDiscretization times) {
 		super(initialValue, numberOfSimulations, seed, times);
 		this.muDrift = muDrift;
 		this.sigmaVolatility = sigmaVolatility;
-		this.transform = (x -> x);
-		this.inverseTransform = (x -> x);
+		transform = (x -> x);
+		inverseTransform = (x -> x);
 	}
 
 	/*
@@ -33,7 +33,7 @@ public class MilsteinSchemeForBlackScholes extends AbstractProcessSimulation {
 	@Override
 	protected RandomVariable getDrift(RandomVariable lastRealization, int timeIndex) {
 		TimeDiscretization times = getTimeDiscretization();
-		final double timeStep = times.getTimeStep(timeIndex - 1);
+		double timeStep = times.getTimeStep(timeIndex - 1);
 		return lastRealization.mult(muDrift).mult(timeStep);
 	}
 
@@ -45,13 +45,14 @@ public class MilsteinSchemeForBlackScholes extends AbstractProcessSimulation {
 		BrownianMotion brownianMotion = getStochasticDriver();
 
 		TimeDiscretization times = getTimeDiscretization();
-		final double timeStep = times.getTimeStep(timeIndex - 1);
+		
+		double timeStep = times.getTimeStep(timeIndex - 1);
 
-		final RandomVariable brownianIncrement = brownianMotion.getBrownianIncrement(timeIndex - 1, 0);
+		RandomVariable brownianIncrement = brownianMotion.getBrownianIncrement(timeIndex - 1, 0);
 
-		final RandomVariable linearTerm = lastRealization.mult(sigmaVolatility).mult(brownianIncrement);
+		RandomVariable linearTerm = lastRealization.mult(sigmaVolatility).mult(brownianIncrement);
 
-		final RandomVariable adjustment = brownianIncrement.mult(brownianIncrement).sub(timeStep).mult(lastRealization)
+		RandomVariable adjustment = brownianIncrement.mult(brownianIncrement).sub(timeStep).mult(lastRealization)
 				.mult(sigmaVolatility * sigmaVolatility * 0.5);
 
 		return linearTerm.add(adjustment);

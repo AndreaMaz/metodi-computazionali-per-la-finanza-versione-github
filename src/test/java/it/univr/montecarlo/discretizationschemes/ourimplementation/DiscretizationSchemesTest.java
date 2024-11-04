@@ -3,6 +3,7 @@ package it.univr.montecarlo.discretizationschemes.ourimplementation;
 import java.util.Random;
 
 import it.univr.usefulmethodsarrays.UsefulMethodsForArrays;
+import net.finmath.functions.AnalyticFormulas;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationFromArray;
@@ -28,21 +29,20 @@ public class DiscretizationSchemesTest {
 
 		//this is what we save from the time discretization for the simulation of the logarithm: we use it for the simulations
 		int ratioBetweenNumberOfTimeSteps = times.getNumberOfTimeSteps()/timesForLogarithm.getNumberOfTimeSteps();
-
+		
 		int numberOfSimulatedPaths = 10000;
 		
 		//we "use the gain" we get by simulating less times to simulate more paths
 		int numberOfSimulatedPathsForLogarithm = numberOfSimulatedPaths*ratioBetweenNumberOfTimeSteps;
-
 		
 		int numberOfTests = 100;
 
-		double[] expectedValuesEulerMaruyama = new double[numberOfTests];
-		double[] expectedValuesMilstein = new double[numberOfTests];
-		double[] expectedValuesEulerMaruyamaForLogarithm = new double[numberOfTests];
-
+		double[] errorsEulerMaruyama = new double[numberOfTests];
+		double[] errorsMilstein = new double[numberOfTests];
+		double[] errorsEulerMaruyamaForLogarithm = new double[numberOfTests];
+	
 		Random seedGenerator = new Random();
-
+		
 		for (int i = 0; i<numberOfTests; i++) {
 
 			//for every test, we look at the expectation with a possibly different seed
@@ -58,13 +58,13 @@ public class DiscretizationSchemesTest {
 					numberOfSimulatedPathsForLogarithm, seed, timesForLogarithm);
 
 			//modificheremo le prossime tre righe insieme
-			expectedValuesEulerMaruyama[i] = 0.0; 
-			expectedValuesMilstein[i] = 0.0; 
-			expectedValuesEulerMaruyamaForLogarithm[i] = 0.0; 
+			errorsEulerMaruyama[i] = 0.0; 
+			errorsMilstein[i] = 0.0; 
+			errorsEulerMaruyamaForLogarithm[i] = 0.0; 			
 		}
 
-		System.out.println("Average Euler Maruyama: = " + UsefulMethodsForArrays.getAverage(expectedValuesEulerMaruyama));
-		System.out.println("Average Milstein: = " + UsefulMethodsForArrays.getAverage(expectedValuesMilstein));
-		System.out.println("Average Log Euler Maruyama: = " + UsefulMethodsForArrays.getAverage(expectedValuesEulerMaruyamaForLogarithm));
+		System.out.println("Average error Euler Maruyama: = " + UsefulMethodsForArrays.getAverage(errorsEulerMaruyama));
+		System.out.println("Average error Milstein: = " + UsefulMethodsForArrays.getAverage(errorsMilstein));
+		System.out.println("Average error Log Euler Maruyama: = " + UsefulMethodsForArrays.getAverage(errorsEulerMaruyamaForLogarithm));
 	}
 }

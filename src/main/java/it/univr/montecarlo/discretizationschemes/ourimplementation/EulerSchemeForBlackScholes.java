@@ -13,16 +13,16 @@ import net.finmath.time.TimeDiscretization;
  */
 public class EulerSchemeForBlackScholes extends AbstractProcessSimulation {
 
-	private final double muDrift;// mu
-	private final double sigmaVolatility;// sigma
+	private double muDrift;// mu
+	private double sigmaVolatility;// sigma
 
 	public EulerSchemeForBlackScholes(double sigmaVolatility, double muDrift,
 			double initialValue, int numberOfSimulations, int seed, TimeDiscretization times) {
 		super(initialValue, numberOfSimulations, seed, times);
 		this.muDrift = muDrift;
 		this.sigmaVolatility = sigmaVolatility;
-		this.transform = (x -> x);
-		this.inverseTransform = (x -> x);
+		transform = (x -> x);
+		inverseTransform = (x -> x);
 	}
 
 	/*
@@ -33,7 +33,7 @@ public class EulerSchemeForBlackScholes extends AbstractProcessSimulation {
 	@Override
 	protected RandomVariable getDrift(RandomVariable lastRealization, int timeIndex) {
 		TimeDiscretization times = getTimeDiscretization();
-		final double timeStep = times.getTimeStep(timeIndex - 1);
+		double timeStep = times.getTimeStep(timeIndex - 1);
 		return lastRealization.mult(muDrift).mult(timeStep);
 	}
 
@@ -50,7 +50,7 @@ public class EulerSchemeForBlackScholes extends AbstractProcessSimulation {
 		 * getStochasticDriver() is public (it could also be protected)
 		 */
 		BrownianMotion brownianMotion = getStochasticDriver();
-		final RandomVariable brownianIncrement = brownianMotion.getBrownianIncrement(timeIndex - 1, 0);
+		RandomVariable brownianIncrement = brownianMotion.getBrownianIncrement(timeIndex - 1, 0);
 		return lastRealization.mult(sigmaVolatility).mult(brownianIncrement);
 	}
 

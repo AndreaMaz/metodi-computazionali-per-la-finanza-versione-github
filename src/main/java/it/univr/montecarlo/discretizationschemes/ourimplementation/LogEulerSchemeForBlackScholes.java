@@ -17,8 +17,8 @@ import net.finmath.time.TimeDiscretization;
  */
 public class LogEulerSchemeForBlackScholes extends AbstractProcessSimulation {
 
-	private final double muDrift;// mu
-	private final double sigmaVolatility;// sigma
+	private double muDrift;// mu
+	private double sigmaVolatility;// sigma
 
 	public LogEulerSchemeForBlackScholes(double sigmaVolatility, double muDrift,
 			double initialValue, int numberOfSimulations, int seed, TimeDiscretization times) {
@@ -30,12 +30,12 @@ public class LogEulerSchemeForBlackScholes extends AbstractProcessSimulation {
 		 * are added to the last realization of the logarithm process, and the value
 		 * obtained is exponentiated, by this transform.
 		 */
-		this.transform = (x -> Math.exp(x));
+		transform = (x -> Math.exp(x));
 		/*
 		 * the inverse transform is needed to sum the drift and diffusion of the
 		 * logarithm computed here to the last realization of the logarithm
 		 */
-		this.inverseTransform = (x -> Math.log(x));
+		inverseTransform = (x -> Math.log(x));
 	}
 
 	/*
@@ -58,7 +58,7 @@ public class LogEulerSchemeForBlackScholes extends AbstractProcessSimulation {
 	@Override
 	protected RandomVariable getDiffusion(RandomVariable lastRealization, int timeIndex) {
 		BrownianMotion brownianMotion = getStochasticDriver();
-		final RandomVariable brownianIncrement = brownianMotion.getBrownianIncrement(timeIndex - 1, 0);
+		RandomVariable brownianIncrement = brownianMotion.getBrownianIncrement(timeIndex - 1, 0);
 		return brownianIncrement.mult(sigmaVolatility);
 	}
 }

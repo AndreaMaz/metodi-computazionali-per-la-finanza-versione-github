@@ -24,15 +24,15 @@ public abstract class AbstractProcessSimulation {
 	// it will contain the paths of the process
 	private RandomVariable[] paths;// not yet initialized: default value is null.
 
-	private final int numberOfSimulations;
+	private int numberOfSimulations;
 
-	private final TimeDiscretization times;
+	private TimeDiscretization times;
 
 	// the initial value of the process: path[0] has to be filled with this value
-	private final double initialValue;
+	private double initialValue;
 
 	// used in order to generate the Brownian motion
-	private final int seed;
+	private int seed;
 
 	// used as the stochastic driver of the process
 	private BrownianMotion brownianMotion;
@@ -71,10 +71,10 @@ public abstract class AbstractProcessSimulation {
 	 */
 	private void generate() {
 
-		final int numberOfTimes = times.getNumberOfTimes();
+		int numberOfTimes = times.getNumberOfTimes();
 		/*
 		 * One-dimensional Brownian motion, taken from the Finmath library. Note that it has a method
-		 * getIncrement(final int timeIndex, final int factor) that must be called in the generation of the
+		 * getIncrement(int timeIndex, int factor) that must be called in the generation of the
 		 * diffusion in the derived classes. So we don't use it here, but in the derived classes.
 		 */
 		brownianMotion = new BrownianMotionFromMersenneRandomNumbers(times, 1, numberOfSimulations, seed);
@@ -161,9 +161,9 @@ public abstract class AbstractProcessSimulation {
 	 * @return the path of the process for the given simulation index
 	 */
 	public double[] getPathForGivenSimulation(int pathNumber) {
-		final RandomVariable[] pathAsRandomVariables = getPaths();
-		final int numberOfTimes = times.getNumberOfTimes();
-		final double samplePath[] = new double[numberOfTimes];
+		RandomVariable[] pathAsRandomVariables = getPaths();
+		int numberOfTimes = times.getNumberOfTimes();
+		double samplePath[] = new double[numberOfTimes];
 		for (int timeIndex = 0; timeIndex < numberOfTimes; timeIndex++) {
 			samplePath[timeIndex] = pathAsRandomVariables[timeIndex].get(pathNumber);
 		}
@@ -177,16 +177,16 @@ public abstract class AbstractProcessSimulation {
 	 * @param pathNumber, index of the simulation we consider
 	 */
 	public void printAPath(int pathNumber) {
-		final double[] samplePath = getPathForGivenSimulation(pathNumber);
-		for (final double realization : samplePath) {
+		double[] samplePath = getPathForGivenSimulation(pathNumber);
+		for (double realization : samplePath) {
 			System.out.println(realization);
 		}
 	}
 
 	/**
-	 * It returns the final value of the process
+	 * It returns the value of the process
 	 *
-	 * @return random variable holding the realizations of the process at final time
+	 * @return random variable holding the realizations of the process at time
 	 */
 	public RandomVariable getFinalValue() {
 		return getProcessAtGivenTimeIndex(times.getNumberOfTimes() - 1);
