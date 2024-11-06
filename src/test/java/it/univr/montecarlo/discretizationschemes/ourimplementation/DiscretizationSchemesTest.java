@@ -3,7 +3,6 @@ package it.univr.montecarlo.discretizationschemes.ourimplementation;
 import java.util.Random;
 
 import it.univr.usefulmethodsarrays.UsefulMethodsForArrays;
-import net.finmath.functions.AnalyticFormulas;
 import net.finmath.stochastic.RandomVariable;
 import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationFromArray;
@@ -57,10 +56,19 @@ public class DiscretizationSchemesTest {
 			AbstractProcessSimulation simulatorLogEuler = new LogEulerSchemeForBlackScholes(volatility, muDrift, initialValue,
 					numberOfSimulatedPathsForLogarithm, seed, timesForLogarithm);
 
+			RandomVariable processvalueAtFinalTimeForEulerMaruyama = simulatorEulerMaruyama.getFinalValue();
+			RandomVariable processvalueAtFinalTimeForMilstein = simulatorMilstein.getFinalValue();
+			RandomVariable processvalueAtFinalTimeForLogEuler = simulatorLogEuler.getFinalValue();
+			
+			double averageAtFinalTimeForEulerMaruyama = processvalueAtFinalTimeForEulerMaruyama.getAverage();
+			double averageAtFinalTimeForMilstein = processvalueAtFinalTimeForMilstein.getAverage();
+			double averageAtFinalTimeForLogEuler = processvalueAtFinalTimeForLogEuler.getAverage();
+
+			
 			//modificheremo le prossime tre righe insieme
-			errorsEulerMaruyama[i] = 0.0; 
-			errorsMilstein[i] = 0.0; 
-			errorsEulerMaruyamaForLogarithm[i] = 0.0; 			
+			errorsEulerMaruyama[i] = Math.abs(averageAtFinalTimeForEulerMaruyama-initialValue); 
+			errorsMilstein[i] = Math.abs(averageAtFinalTimeForMilstein-initialValue); 
+			errorsEulerMaruyamaForLogarithm[i] = Math.abs(averageAtFinalTimeForLogEuler-initialValue);		
 		}
 
 		System.out.println("Average error Euler Maruyama: = " + UsefulMethodsForArrays.getAverage(errorsEulerMaruyama));
