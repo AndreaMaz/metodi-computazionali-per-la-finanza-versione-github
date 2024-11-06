@@ -151,7 +151,8 @@ public abstract class AbstractProcessSimulation {
 	 * @return a random variable with the realizations of the process.
 	 */
 	public RandomVariable getProcessAtGivenTime(double time) {
-		return getProcessAtGivenTimeIndex(times.getTimeIndex(time));
+		int timeIndexForGivenTime = times.getTimeIndex(time);
+		return getProcessAtGivenTimeIndex(timeIndexForGivenTime);
 	}
 
 	/**
@@ -165,7 +166,8 @@ public abstract class AbstractProcessSimulation {
 		int numberOfTimes = times.getNumberOfTimes();
 		double samplePath[] = new double[numberOfTimes];
 		for (int timeIndex = 0; timeIndex < numberOfTimes; timeIndex++) {
-			samplePath[timeIndex] = pathAsRandomVariables[timeIndex].get(pathNumber);
+			RandomVariable realizationsAtTimeIndex = pathAsRandomVariables[timeIndex];
+			samplePath[timeIndex] = realizationsAtTimeIndex.get(pathNumber);
 		}
 		return samplePath;
 	}
