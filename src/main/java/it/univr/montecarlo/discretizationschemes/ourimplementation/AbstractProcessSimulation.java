@@ -140,8 +140,10 @@ public abstract class AbstractProcessSimulation {
 	 *         process.
 	 */
 	public RandomVariable getProcessAtGivenTimeIndex(int timeIndex) {
-		RandomVariable generatedPaths[] = getPaths();
-		return generatedPaths[timeIndex];
+		if (paths == null) {
+			generate();
+		}
+		return paths[timeIndex];
 	}
 
 	/**
