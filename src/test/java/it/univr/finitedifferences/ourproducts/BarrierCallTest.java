@@ -19,9 +19,8 @@ import net.finmath.time.TimeDiscretization;
 import net.finmath.time.TimeDiscretizationFromArray;
 
 /**
- * In this class we test the Finmath library implementation of finite difference methods to price call and put options.
- * The underlying is a Black-Scholes process. We print the prices for different initial values of the underlying and check,
- * via assertArrayEquals, if these are close to the analytic one.
+ * In this class we compare Monte Carlo and Finite differences for the approximation of the price of a
+ * down-and-out call option.
  * 
  * @author Andrea Mazzon
  *
@@ -49,11 +48,13 @@ public class BarrierCallTest {
 		
 		// MONTE CARLO
 		
+		long timeStartForMonteCarlo = System.currentTimeMillis();
+		
 		AbstractAssetMonteCarloProduct optionValueMCCalculator = new BarrierOption(maturity, strike, lowerBarrier, upperBarrier);
 		
 		//Monte Carlo time discretization parameters
 		double initialTime = 0.0;
-		double timeStep = 0.1;
+		double timeStep = 0.01;
 		int numberOfTimeSteps = (int) (maturity/timeStep);
 
 		TimeDiscretization times = new TimeDiscretizationFromArray(initialTime, numberOfTimeSteps, timeStep);
@@ -71,13 +72,23 @@ public class BarrierCallTest {
 
 		double monteCarloValueOfTheOption = optionValueMCCalculator.getValue(blackScholesProcess);
 
-		System.out.println("The Monte Carlo price is: " + monteCarloValueOfTheOption);
+		long elapsedTimeForMonteCarlo = System.currentTimeMillis() - timeStartForMonteCarlo;
 		
+		System.out.println("The Monte Carlo price is: " + monteCarloValueOfTheOption);
+		System.out.println("Elapsed time for Monte Carlo: " + elapsedTimeForMonteCarlo);
+
+		System.out.println();
+		System.out.println();
 		
 		// FINITE DIFFERENCES
 		
+		
+		long timeStartForFiniteDifferences = System.currentTimeMillis();
+
+		
 		double theta = 0.5;
 
+		
 		//the object representing the option (like the classes implementing AbstractMonteCarloProduct)
 		FiniteDifference1DProduct optionValueFDCalculator = new FDMBarrierCallOption(maturity, strike, lowerBarrier, upperBarrier, theta);
 		
@@ -85,6 +96,8 @@ public class BarrierCallTest {
 		int numTimesteps = 70;
 		int numSpacesteps = 300;
 		int numStandardDeviations = 15;
+		
+		
 		
 		FiniteDifference1DModel model = new FDMBlackScholesModel(
 				numTimesteps,//for the discretization of the time interval
@@ -120,8 +133,10 @@ public class BarrierCallTest {
 
 		double finiteDifferenceValueOfTheOption = interpolatedCallFunction.applyAsDouble(initialValue);		
 
+		long elapsedTimeForFiniteDifferences = System.currentTimeMillis() - timeStartForFiniteDifferences; 
 
 		System.out.println("The Finite difference price is: " + finiteDifferenceValueOfTheOption);
+		System.out.println("Elapsed time for finite difference: " + elapsedTimeForFiniteDifferences);
 	}
 
 }

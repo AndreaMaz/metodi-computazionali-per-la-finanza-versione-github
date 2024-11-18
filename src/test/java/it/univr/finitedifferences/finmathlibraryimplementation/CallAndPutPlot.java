@@ -50,20 +50,6 @@ public class CallAndPutPlot {
 		//option parameters
 		final double optionStrike = 50;
 		double maturity = 0.1;//this is just the first maturity for which we do the plot
-		
-//		double forwardValue = initialValue * Math.exp(riskFreeRate * maturity);
-//		double varianceOfStockPrice = Math.pow(initialValue, 2) * Math.exp(2 * riskFreeRate * maturity)
-//					* (Math.exp(Math.pow(volatility, 2) * maturity) - 1);
-//		double upperBound = forwardValue
-//				+ numberStandardDeviations * Math.sqrt(varianceOfStockPrice);
-//		
-//		
-//		double spaceStepLength = upperBound / numberSpaceSteps;
-//		
-//		final double timeStepLength = 0.5*(spaceStepLength*spaceStepLength / (volatility*volatility*upperBound*upperBound)) ;
-		
-//		final int numberTimeSteps = (int) (maturity / timeStepLength);
-
 
 		final FiniteDifference1DModel model = new FDMBlackScholesModel(
 				numberTimeSteps,//for the discretization of the time interval
@@ -83,12 +69,12 @@ public class CallAndPutPlot {
 		/* 
 		 * We don't really have to know that to call the method, but anyway: this method calls a method with the same name
 		 * (but different argument list) defined in FiniteDifference1DModel. There, the boundary conditions are given according to
-		 * the option: note that  FDMEuropeanCallOption has itw own implementation of the methods giving the boundary
+		 * the option: note that FDMEuropeanCallOption has its own implementation of the methods giving the boundary
 		 * conditions. 
 		 */
 		double[][] returnedValues = callOption.getValue(0.0, model);
 
-		//there are the space variables (i.e., the initial values) for which the prices are computed
+		//these are the space variables (i.e., the initial values) for which the prices are computed
 		double[] initialStockPricesForCall = returnedValues[0];
 
 		//these are the corresponding prices
@@ -114,7 +100,7 @@ public class CallAndPutPlot {
 		plotCallAndPut.setYAxisLabel("Call price for maturity " + formatterMaturity.format(maturity));
 		plotCallAndPut.setYRange(0, 200);
 		plotCallAndPut.show();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
 
 		//now we want to plot the prices also for other maturities, one after the other
@@ -138,10 +124,10 @@ public class CallAndPutPlot {
 
 			plotCallAndPut.update(plotables);//in this way, all the plots are in the same figure
 			plotCallAndPut.setYAxisLabel("Call price for maturity " + formatterMaturity.format(maturity));
-			Thread.sleep(500);
+			Thread.sleep(1000);
 			maturity += 0.1;
 		}
-		
+		Thread.sleep(1500);
 		
 		//NOW THE PUT: we want to plot the put price in the same figure as for the call
 		
@@ -186,7 +172,7 @@ public class CallAndPutPlot {
 
 			plotCallAndPut.update(plotables);//in this way, all the plots are in the same figure
 			plotCallAndPut.setYAxisLabel("Put price for maturity " + formatterMaturity.format(maturity));
-			Thread.sleep(500);
+			Thread.sleep(1000);
 			maturity += 0.1;
 		}
 
